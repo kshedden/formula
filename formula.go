@@ -2,20 +2,10 @@ package formula
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"unicode"
 )
-
-// DataSource defines a dataset that will be processed through a formula.
-type DataSource interface {
-
-	// Names defines the names of the variables in the dataset.
-	Names() []string
-
-	// Get returns the data corresponding to one variable.  It should
-	// only return []float64 or []string
-	Get(string) interface{}
-}
 
 // Tokens that can appear in a formula.
 type tokType int
@@ -311,8 +301,58 @@ func NewMulti(formulas []string, rawdata DataSource, config *Config) (*Parser, e
 // ColSet represents a design matrix.  It is an ordered set of named
 // numeric data columns.
 type ColSet struct {
-	Names []string
-	Data  [][]float64
+	names []string
+	data  [][]float64
+}
+
+func NewColSet(names []string, data [][]float64) *ColSet {
+	return &ColSet{
+		names: names,
+		data:  data,
+	}
+}
+
+func (cs *ColSet) Names() []string {
+	return cs.names
+}
+
+func (cs *ColSet) Data() [][]float64 {
+	return cs.data
+}
+
+func (cs *ColSet) DropNA() *ColSet {
+
+	var ii []int
+	n := len(cs.data[0])
+
+	for i := 0; i < n; i++ {
+		keep := true
+		for j := range cs.names {
+			keep = keep && !math.IsNaN(cs.data[j][i])
+		}
+		if keep {
+			ii = append(ii, i)
+		}
+	}
+
+	da := make([][]float64, len(cs.data))
+	for j := range cs.data {
+		da[j] = make([]float64, len(ii))
+	}
+
+	for j, i := range ii {
+		for k, v := range cs.data {
+			da[k][j] = v[i]
+		}
+	}
+
+	names1 := make([]string, len(cs.names))
+	copy(names1, cs.names)
+
+	return &ColSet{
+		names: names1,
+		data:  da,
+	}
 }
 
 // Extend a ColSet with the data of another ColSet.
@@ -321,14 +361,14 @@ func (c *ColSet) Extend(o *ColSet) {
 	// Don't add duplicate terms (which may arise when parsing
 	// multiple formulas together or when using Keep).
 	mp := make(map[string]bool)
-	for _, na := range c.Names {
+	for _, na := range c.names {
 		mp[na] = true
 	}
 
-	for j, na := range o.Names {
+	for j, na := range o.names {
 		if !mp[na] {
-			c.Names = append(c.Names, na)
-			c.Data = append(c.Data, o.Data[j])
+			c.names = append(c.names, na)
+			c.data = append(c.data, o.data[j])
 		}
 	}
 }
@@ -411,7 +451,7 @@ func (fp *Parser) codeStrings(na, ref string, s []string) {
 		dat[c][i] = 1
 	}
 
-	fp.workData[na] = &ColSet{Names: fp.facNames[na], Data: dat}
+	fp.workData[na] = &ColSet{names: fp.facNames[na], data: dat}
 }
 
 // convertColumn converts the raw data column with the given name to a
@@ -433,8 +473,8 @@ func (fp *Parser) convertColumn(na string) error {
 		fp.codeStrings(na, ref, s)
 	case []float64:
 		fp.workData[na] = &ColSet{
-			Names: []string{na},
-			Data:  [][]float64{s},
+			names: []string{na},
+			data:  [][]float64{s},
 		}
 	default:
 		return fmt.Errorf("unknown type %T for variable '%s' in convertColumn", s, na)
@@ -454,12 +494,12 @@ func (fp *Parser) doPlus(a, b string) *ColSet {
 	var names []string
 	var dat [][]float64
 
-	names = append(names, ds1.Names...)
-	names = append(names, ds2.Names...)
-	dat = append(dat, ds1.Data...)
-	dat = append(dat, ds2.Data...)
+	names = append(names, ds1.names...)
+	names = append(names, ds2.names...)
+	dat = append(dat, ds1.data...)
+	dat = append(dat, ds2.data...)
 
-	return &ColSet{Names: names, Data: dat}
+	return &ColSet{names: names, data: dat}
 }
 
 // doTimes creates a new ColSet by multiplying the columnsets named
@@ -473,10 +513,10 @@ func (fp *Parser) doTimes(a, b string) *ColSet {
 	var names []string
 	var dat [][]float64
 
-	for j1, na1 := range ds1.Names {
-		for j2, na2 := range ds2.Names {
-			d1 := ds1.Data[j1]
-			d2 := ds2.Data[j2]
+	for j1, na1 := range ds1.names {
+		for j2, na2 := range ds2.names {
+			d1 := ds1.data[j1]
+			d2 := ds2.data[j2]
 			x := make([]float64, len(d1))
 			for i := range x {
 				x[i] = d1[i] * d2[i]
@@ -517,7 +557,7 @@ func (fp *Parser) createIcept() bool {
 	for i := range x {
 		x[i] = 1
 	}
-	fp.workData["icept"] = &ColSet{Names: []string{"icept"}, Data: [][]float64{x}}
+	fp.workData["icept"] = &ColSet{names: []string{"icept"}, data: [][]float64{x}}
 
 	return true
 }

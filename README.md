@@ -9,9 +9,9 @@ formula : Formula parser for Go
 __formula__ is a library for building data sets in Go using formulas.  The most
 common use-case for this library is to build a design matrix for use in
 a statistical regression analysis.
-The formulas behave much like formulas in R, Julia, Matlab, and Python (using Patsy).
+The formulas in this package behave much like formulas in R, Julia, Matlab, and Python (using Patsy).
 Interactions, algebraic expansion, and dummy-coding are all supported.  Compared
-to these other formula packages, there are a few important simplifying differences:
+to these other formula packages, there are a few simplifying differences:
 
 * Only one-sided formulas are supported
 

@@ -13,12 +13,20 @@ The formulas in this package behave much like formulas in R, Julia, Matlab, and 
 Interactions, algebraic expansion, and dummy-coding are all supported.  Compared
 to these other formula packages, there are a few simplifying differences:
 
-* Only one-sided formulas are supported
+* Only one-sided formulas are supported.  Multiple formulas can be parsed
+together to produce a single dataset.  To produce a dataset for a regression
+model, parse two formulas at once -- one formula for each side of the regression
+relationship.
 
 * Main effects are not automatically included for interactions.
 
 * Functions (transformations) must be deterministic, not "stateful"
 
-This package does not fit any statistical models.  If you want to do that you can use
+This package does not fit any statistical models.  If you want to fit a model
+to the dataset produced by the formula package, you can use one of
 these packages: [GLM](http://github.com/kshedden/statmodel/glm),
 [duration](http://github.com/kshedden/statmodel/duration).
+
+See [here](https://github.com/kshedden/statmodel/blob/master/glm/examples/nhanes/nhanes.go)
+for examples using this package produce datasets, and the [statmodel](http://github.com/kshedden/statmodel)
+package to fit models.

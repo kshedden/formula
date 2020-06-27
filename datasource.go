@@ -19,10 +19,13 @@ type basicSource struct {
 	data  []interface{}
 }
 
+// Names returns a slice containing all the names of variables in the
+// source.
 func (b *basicSource) Names() []string {
 	return b.names
 }
 
+// Get returns the data corresponding to a given variable name.
 func (b *basicSource) Get(col string) interface{} {
 	ix, ok := b.colix[col]
 	if !ok {

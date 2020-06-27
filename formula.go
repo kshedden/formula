@@ -359,7 +359,7 @@ func (cs *ColSet) DropNA() *ColSet {
 func (c *ColSet) Extend(o *ColSet) {
 
 	// Don't add duplicate terms (which may arise when parsing
-	// multiple formulas together or when using Keep).
+	// multiple formulas).
 	mp := make(map[string]bool)
 	for _, na := range c.names {
 		mp[na] = true

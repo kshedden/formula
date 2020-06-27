@@ -55,11 +55,14 @@ func TestLexParse(t *testing.T) {
 		t.Fail()
 		return
 	}
-	exp := []*token{&token{symbol: leftp}, &token{name: "A"},
-		&token{symbol: plus}, &token{name: "b"}, &token{symbol: rightp},
-		&token{symbol: times}, &token{name: "c"}, &token{symbol: plus},
-		&token{name: "d"}, &token{symbol: times},
-		&token{symbol: funct, name: "f(e)", funcn: "f", arg: "e"}}
+	exp := []*token{
+		{symbol: leftp}, {name: "A"},
+		{symbol: plus}, {name: "b"},
+		{symbol: rightp}, {symbol: times},
+		{name: "c"}, {symbol: plus},
+		{name: "d"}, {symbol: times},
+		{symbol: funct, name: "f(e)", funcn: "f", arg: "e"},
+	}
 
 	if !tokEq(v, exp) {
 		t.Fail()
@@ -70,11 +73,12 @@ func TestLexParse(t *testing.T) {
 		t.Fail()
 		return
 	}
-	exp = []*token{&token{name: "A"}, &token{name: "b"},
-		&token{symbol: plus}, &token{name: "c"}, &token{symbol: times},
-		&token{name: "d"},
-		&token{symbol: funct, name: "f(e)", funcn: "f", arg: "e"},
-		&token{symbol: times}, &token{symbol: plus},
+	exp = []*token{
+		{name: "A"}, {name: "b"},
+		{symbol: plus}, {name: "c"},
+		{symbol: times}, {name: "d"},
+		{symbol: funct, name: "f(e)", funcn: "f", arg: "e"},
+		{symbol: times}, {symbol: plus},
 	}
 
 	if !tokEq(b, exp) {
@@ -111,7 +115,7 @@ type mapAdapter struct {
 
 func (ma *mapAdapter) Names() []string {
 	var names []string
-	for k, _ := range ma.mp {
+	for k := range ma.mp {
 		names = append(names, k)
 	}
 	return names

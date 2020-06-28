@@ -1,7 +1,5 @@
 package formula
 
-import "fmt"
-
 // DataSource defines a dataset that will be processed through a formula.
 type DataSource interface {
 
@@ -29,14 +27,14 @@ func (b *basicSource) Names() []string {
 func (b *basicSource) Get(col string) interface{} {
 	ix, ok := b.colix[col]
 	if !ok {
-		panic(fmt.Sprintf("Column '%s' not found", col))
+		return nil
 	}
 	return b.data[ix]
 }
 
 // NewSource returns a DataSource for the given variables
 // and data values.
-func NewSource(names []string, data []interface{}) DataSource {
+func NewSource(data []interface{}, names []string) DataSource {
 	colix := make(map[string]int)
 	for k, c := range names {
 		colix[c] = k

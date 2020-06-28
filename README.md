@@ -39,6 +39,6 @@ package, you can use one of these packages:
 
 See
 [here](https://github.com/kshedden/statmodel/blob/master/glm/examples/nhanes/nhanes.go)
-for examples that use this package to produce datasets, and then use the
-[statmodel](http://github.com/kshedden/statmodel) package to fit
+for examples that use this package to produce datasets, and that then use the
+[statmodel](http://github.com/kshedden/statmodel) package to fit regression
 models.

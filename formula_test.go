@@ -108,33 +108,17 @@ func makeFuncs() map[string]Func {
 	return funcs
 }
 
-// A DataSource from a map
-type mapAdapter struct {
-	mp map[string]interface{}
-}
-
-func (ma *mapAdapter) Names() []string {
-	var names []string
-	for k := range ma.mp {
-		names = append(names, k)
-	}
-	return names
-}
-
-func (ma *mapAdapter) Get(na string) interface{} {
-	return ma.mp[na]
-}
-
 func simpleData() DataSource {
 
-	mp := map[string]interface{}{
-		"x1": []float64{0, 1, 2, 3, 4},
-		"x2": []string{"0", "0", "0", "1", "1"},
-		"x3": []string{"a", "b", "a", "b", "a"},
-		"x4": []float64{-1, 0, 1, 0, -1},
+	names := []string{"x1", "x2", "x3", "x4"}
+	data := []interface{}{
+		[]float64{0, 1, 2, 3, 4},
+		[]string{"0", "0", "0", "1", "1"},
+		[]string{"a", "b", "a", "b", "a"},
+		[]float64{-1, 0, 1, 0, -1},
 	}
 
-	return &mapAdapter{mp}
+	return NewSource(data, names)
 }
 
 func TestSingle(t *testing.T) {

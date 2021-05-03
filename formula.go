@@ -312,6 +312,16 @@ func NewColSet(names []string, data [][]float64) *ColSet {
 	}
 }
 
+// Get returns a column of the ColSet by name.
+func (cs *ColSet) Get(na string) ([]float64, error) {
+	for k, n := range cs.names {
+		if n == na {
+			return cs.data[k], nil
+		}
+	}
+	return nil, fmt.Errorf("No column '%s'", na)
+}
+
 func (cs *ColSet) Names() []string {
 	return cs.names
 }
@@ -488,8 +498,17 @@ func (fp *Parser) convertColumn(na string) error {
 // columns comprising the union of the two arguments.
 func (fp *Parser) doPlus(a, b string) *ColSet {
 
-	ds1 := fp.workData[a]
-	ds2 := fp.workData[b]
+	ds1, ok := fp.workData[a]
+	if !ok {
+		msg := fmt.Sprintf("Variable '%s' not found.\n", a)
+		panic(msg)
+	}
+
+	ds2, ok := fp.workData[b]
+	if !ok {
+		msg := fmt.Sprintf("Variable '%s' not found.\n", b)
+		panic(msg)
+	}
 
 	var names []string
 	var dat [][]float64

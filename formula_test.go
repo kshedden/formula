@@ -22,6 +22,19 @@ func tokEq(a, b []*token) bool {
 	return true
 }
 
+func TestColSet(t *testing.T) {
+
+	cs := ColSet{
+		names: []string{"a", "b", "c"},
+		data:  [][]float64{{1, 3}, {-1, 2}, {5, 6}},
+	}
+
+	b, err := cs.Get("b")
+	if err != nil || floats.Sum(b) != 1 {
+		t.Fail()
+	}
+}
+
 func colSetEq(a, b *ColSet) bool {
 
 	if len(a.names) != len(b.names) {
